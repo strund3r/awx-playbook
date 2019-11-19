@@ -1,0 +1,11 @@
+- hosts: all
+  become: yes
+  user: ubuntu
+  gather_facts: no
+  pre_tasks:
+  - name: 'Update repo'
+    raw: 'apt-get update'
+  - name: 'Install python'
+    raw: 'apt-get install -y python'
+  roles:
+  - awx

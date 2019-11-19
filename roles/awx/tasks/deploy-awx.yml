@@ -1,0 +1,56 @@
+- name: Install Docker
+  shell: curl -fsSL https://get.docker.com | bash -
+
+# - name: Add Ansible package
+#   apt_repository:
+#     repo: deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main
+#     state: present
+
+- name: Install Ansible
+  apt:
+    name: ansible
+    state: latest
+#    update_cache: yes
+
+- name: Install pip
+  apt:
+    name: python-pip
+    state: latest
+
+- name: Install docker-py
+  pip:
+    name: docker-py
+
+- name: Install Docker Compose via pip
+  pip:
+    name: docker-compose==1.9.0
+
+- name: Add Ansible package
+  shell: curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+
+- name: Install Node.js and npm
+  apt:
+    name: "{{ packages }}"
+    state: present
+  vars:
+    packages:
+    - nodejs
+    - npm
+
+- name: Install npm globally
+  npm:
+    name: npm
+    global: yes
+
+- name: Cloning AWX
+  git:
+    repo: 'https://github.com/ansible/awx.git'
+    dest: /awx
+
+- name: Copy inventory to the server
+  copy:
+    src: "{{ role_path }}/files/inventory"
+    dest: /awx/installer/inventory
+
+- name: Install AWX
+  shell: cd /awx/installer && ansible-playbook -i inventory install.yml
